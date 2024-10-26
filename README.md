@@ -1,9 +1,9 @@
 [![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-buy/refs/heads/main/src/sw_banner.webp)](https://use.senangwebs.com)
 Learn more at [SenangWebs.com](https://use.senangwebs.com)
 
-# SenangWeb Buy (SWB)
+# SenangWebs Buy (SWB)
 
-SenangWeb Buy (SWB) is a lightweight JavaScript library that enables easy implementation of e-commerce functionality through HTML attributes. Create a full shopping experience with WhatsApp checkout integration, product sorting, searching, and more - all with minimal setup.
+SenangWebs Buy (SWB) is a lightweight JavaScript library that enables easy implementation of e-commerce functionality through HTML attributes. Create a full shopping experience with WhatsApp checkout integration, product sorting, searching, and more - all with minimal setup.
 
 ## Features
 
@@ -28,7 +28,7 @@ npm install senangweb-buy
 
 ### Using a CDN
 
-Include SenangWeb Buy directly in your HTML file:
+Include SenangWebs Buy directly in your HTML file:
 
 ```html
 <script src="https://unpkg.com/senangweb-buy@latest/dist/swb.js"></script>
@@ -169,13 +169,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Support
-
-If you encounter any issues or have questions:
-1. File an issue on the GitHub repository
-2. Contact us through our website
-3. Send us an email at support@senangwebs.com
 
 ## Acknowledgments
 

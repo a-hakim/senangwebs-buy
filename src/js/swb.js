@@ -1,5 +1,5 @@
-// SenangWeb Buy Library
-class SenangWebBuy {
+// SenangWebs Buy Library
+class SenangWebsBuy {
     constructor() {
         this.cart = [];
         this.storeInfo = {};
@@ -854,4 +854,4 @@ const styleSheet = document.createElement('style');
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);
 
-window.swb = new SenangWebBuy();
+window.swb = new SenangWebsBuy();
