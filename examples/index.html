@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SenangWeb Buy Demo - Modern E-commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../dist/swm.js" defer></script>
+</head>
+
+<body class="min-h-screen bg-gray-50">
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Store Catalog -->
+        <div data-swb-catalog data-swb-store="TechGear Store" data-swb-whatsapp="+601016646234"
+            data-swb-color-primary="#4F46E5" data-swb-color-secondary="#EF4444" data-swb-currency="MYR" data-swb-cart="true" class="space-y-8">
+
+            <!-- Custom styles for SenangWeb Buy components -->
+            <style>
+                .swb-catalog-header {
+                    @apply flex flex-col sm:flex-row gap-4 items-stretch sm:items-center pb-6 border-b border-gray-200;
+                }
+
+                .swb-search-input {
+                    @apply flex-1 min-w-0 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+                }
+
+                .swb-sort-button,
+                .swb-cart-button {
+                    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+                }
+
+                .swb-cart-modal {
+                    @apply fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4;
+                }
+
+                .swb-modal-content {
+                    @apply bg-white rounded-lg shadow-xl max-w-2xl w-full mx-auto p-6;
+                }
+
+                .swb-checkout-form input,
+                .swb-checkout-form textarea {
+                    @apply mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500;
+                }
+            </style>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+                <!-- Product 1 -->
+                <div data-swb-product data-swb-product-sku="TECH001" data-swb-product-name="Premium Wireless Headphones"
+                    data-swb-product-price="299.99" data-swb-product-add-cart-title="Add"
+                    class="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div data-swb-product-image class="aspect-w-3 aspect-h-3 rounded-t-lg overflow-hidden">
+                        <img src="https://placehold.co/600x400" alt="Wireless Headphones"
+                            class="w-full h-full object-center object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div data-swb-product-name>
+                            <h3 class="text-lg font-semibold text-gray-900">Premium Wireless Headphones</h3>
+                        </div>
+                        <div data-swb-product-description class="mt-2">
+                            <p class="text-sm text-gray-500">Experience premium sound quality with active noise
+                                cancellation and 40-hour battery life.</p>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div data-swb-product-price class="text-xl font-bold text-indigo-600">
+                                RM 299.99
+                            </div>
+                            <div class="text-sm text-green-600">In Stock</div>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div data-swb-product data-swb-product-sku="TECH002" data-swb-product-name="Ultra HD Webcam"
+                    data-swb-product-price="129.99" data-swb-product-link="https://example.com/product-details" data-swb-product-link-title="Buy Now"
+                    class="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div data-swb-product-image class="aspect-w-3 aspect-h-3 rounded-t-lg overflow-hidden">
+                        <img src="https://placehold.co/600x400" alt="HD Webcam"
+                            class="w-full h-full object-center object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div data-swb-product-name>
+                            <h3 class="text-lg font-semibold text-gray-900">Ultra HD Webcam</h3>
+                        </div>
+                        <div data-swb-product-description class="mt-2">
+                            <p class="text-sm text-gray-500">Crystal clear 4K video with auto-focus and low-light
+                                correction.</p>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div data-swb-product-price class="text-xl font-bold text-indigo-600">
+                                RM 129.99
+                            </div>
+                            <div class="text-sm text-green-600">In Stock</div>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div data-swb-product data-swb-product-sku="TECH003" data-swb-product-name="Mechanical Gaming Keyboard"
+                    data-swb-product-price="159.99"
+                    class="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div class="relative">
+                        <div data-swb-product-image class="aspect-w-3 aspect-h-3 rounded-t-lg overflow-hidden">
+                            <img src="https://placehold.co/600x400" alt="Gaming Keyboard"
+                                class="w-full h-full object-center object-cover">
+                        </div>
+                        <div
+                            class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                            SALE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div data-swb-product-name>
+                            <h3 class="text-lg font-semibold text-gray-900">Mechanical Gaming Keyboard</h3>
+                        </div>
+                        <div data-swb-product-description class="mt-2">
+                            <p class="text-sm text-gray-500">RGB backlit mechanical keyboard with custom switches.</p>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div data-swb-product-price class="text-xl font-bold text-indigo-600">
+                                RM 159.99
+                            </div>
+                            <div class="text-sm text-green-600">In Stock</div>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- More products... -->
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

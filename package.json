@@ -1,0 +1,27 @@
+{
+  "name": "senangwebs-buy",
+  "version": "1.0.0",
+  "description": "Lightweight JavaScript library that that enables easy implementation of e-commerce functionality through HTML attributes",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["loading", "indicator", "web", "customizable"],
+  "author": "a-hakim",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.25.8",
+    "@babel/preset-env": "^7.25.8",
+    "babel-loader": "^9.2.1",
+    "css-loader": "^7.1.2",
+    "mini-css-extract-plugin": "^2.9.1",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
