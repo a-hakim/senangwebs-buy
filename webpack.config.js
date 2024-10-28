@@ -3,7 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
-    swm: './src/js/swb.js',
+    swb: ['./src/js/swb.js', './src/css/swb.css'],
   },
   output: {
     filename: '[name].js',
@@ -29,4 +29,9 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'swb.css'
+    })
+  ]
 };

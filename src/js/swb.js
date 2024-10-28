@@ -24,7 +24,7 @@ class SenangWebsBuy {
         this.loadCartFromStorage();
         this.initializeCatalog();
         this.setupEventListeners();
-        this.updateCartCount(); // Add this line to update cart count after loading
+        this.updateCartCount();
         this.renderCart();
     }
 
@@ -52,6 +52,27 @@ class SenangWebsBuy {
         this.closeCheckout();
     }
 
+    // Update color variables in CSS
+    updateCustomProperties() {
+        document.documentElement.style.setProperty('--swb-color-primary', this.colors.primary);
+        document.documentElement.style.setProperty('--swb-color-secondary', this.colors.secondary);
+        
+        // Convert hex to rgb for rgba usage
+        const primaryRGB = this.hexToRGB(this.colors.primary);
+        const secondaryRGB = this.hexToRGB(this.colors.secondary);
+        
+        document.documentElement.style.setProperty('--swb-color-primary-rgb', primaryRGB);
+        document.documentElement.style.setProperty('--swb-color-secondary-rgb', secondaryRGB);
+    }
+
+    // Helper function to convert hex to RGB
+    hexToRGB(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `${r}, ${g}, ${b}`;
+    }
+
     initializeCatalog() {
         const catalogElement = document.querySelector('[data-swb-catalog]');
         if (!catalogElement) return;
@@ -71,6 +92,9 @@ class SenangWebsBuy {
         if (primaryColor) this.colors.primary = primaryColor;
         if (secondaryColor) this.colors.secondary = secondaryColor;
 
+        // Update CSS custom properties
+        this.updateCustomProperties();
+
         // Get currency
         const currencyCode = catalogElement.getAttribute('data-swb-currency');
         if (currencyCode) {
@@ -80,10 +104,7 @@ class SenangWebsBuy {
         // Create catalog header
         this.createCatalogHeader(catalogElement);
 
-        // Apply custom colors
-        this.applyCustomColors();
-
-        // Initialize products - Updated to properly track names from content
+        // Initialize products
         const productElements = catalogElement.querySelectorAll('[data-swb-product]');
         this.products = Array.from(productElements).map(elem => {
             const nameElement = elem.querySelector('[data-swb-product-name]');
@@ -296,241 +317,6 @@ class SenangWebsBuy {
         });
     }
 
-    applyCustomColors() {
-        const customStyles = `
-            /* Common styles for interactive elements */
-            .swb-sort-button,
-            .swb-cart-button,
-            .swb-add-to-cart,
-            .swb-checkout-form button {
-                background: ${this.colors.primary};
-                color: white;
-                padding: 0.5rem 1rem;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                transition: background-color 0.2s ease;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                justify-content: center;
-            }
-    
-            .swb-sort-button:hover,
-            .swb-cart-button:hover,
-            .swb-add-to-cart:hover,
-            .swb-checkout-form button:hover {
-                background: ${this.adjustColor(this.colors.primary, -20)};
-            }
-    
-            /* Common styles for form inputs */
-            .swb-search-input,
-            .swb-sort-select,
-            .swb-checkout-form input,
-            .swb-checkout-form textarea {
-                padding: 0.5rem 1rem;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                font-size: 1rem;
-            }
-    
-            .swb-search-input:focus,
-            .swb-sort-select:focus,
-            .swb-checkout-form input:focus,
-            .swb-checkout-form textarea:focus {
-                outline: none;
-                border-color: ${this.colors.primary};
-                box-shadow: 0 0 0 2px ${this.colors.primary}33;
-            }
-    
-            /* Catalog Header */
-            .swb-catalog-header {
-                display: flex;
-                gap: 1rem;
-                margin-bottom: 2rem;
-                align-items: center;
-            }
-    
-            .swb-catalog-header-control {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-            }
-    
-            .swb-search-input {
-                flex: 1;
-            }
-    
-            /* Sort Select */
-            .swb-sort-select {
-                min-width: 200px;
-                appearance: none;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666666'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 0.75rem center;
-                background-size: 1em;
-                padding-right: 2.5rem;
-            }
-    
-            /* Cart Button and Icon */
-            .swb-cart-button,
-            .swb-cart-icon {
-                position: relative;
-            }
-    
-            .swb-cart-icon {
-                background: ${this.colors.primary};
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                padding: 10px;
-                border-radius: 50%;
-                z-index: 1000;
-            }
-    
-            .swb-cart-icon:hover {
-                background: ${this.adjustColor(this.colors.primary, -20)};
-            }
-    
-            .swb-cart-count {
-                position: absolute;
-                top: -8px;
-                right: -8px;
-                background: ${this.colors.secondary};
-                color: white;
-                border-radius: 50%;
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-    
-            /* Cart Modal */
-            .swb-cart-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 0.5rem;
-            }
-    
-            .swb-cart-header h2 {
-                margin: 0;
-                font-size: 1.5rem;
-                font-weight: 600;
-            }
-    
-            .swb-cart-subheader {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding-bottom: 0.5rem;
-                border-bottom: 1px solid #eee;
-            }
-    
-            .swb-cart-subheader p {
-                margin: 0;
-                color: #666;
-                font-size: 0.875rem;
-            }
-    
-            .swb-clear-cart {
-                color: ${this.colors.primary};
-                border: none;
-                cursor: pointer;
-                font-size: 0.875rem;
-                transition: color 0.2s ease;
-            }
-    
-            .swb-clear-cart:hover {
-                color: ${this.adjustColor(this.colors.primary, -20)};
-            }
-    
-            /* Product Buttons */
-            .swb-external-link {
-                background: transparent;
-                color: ${this.colors.primary};
-                padding: 0.5rem 1rem;
-                border: 2px solid ${this.colors.primary};
-                border-radius: 4px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                text-decoration: none;
-                justify-content: center;
-            }
-
-            .swb-external-link:hover {
-                background: ${this.colors.primary};
-                color: white;
-            }
-
-            [data-swb-product-buttons] {
-                margin-top: 1rem;
-                display: flex;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-            }
-
-            [data-swb-product-buttons] > * {
-                flex: 1;
-            }
-        
-            [data-swb-product-buttons] .swb-add-to-cart {
-                width: 100%;
-                margin-top: 0;
-            }
-    
-            /* Cart Items */
-            .swb-item-quantity button {
-                width: 24px;
-                height: 24px;
-                padding: 0;
-            }
-    
-            .swb-remove-item {
-                color: ${this.colors.secondary};
-                border: 2px solid ${this.colors.secondary};
-                background: transparent;
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-    
-            .swb-remove-item:hover {
-                background: ${this.colors.secondary};
-                color: white;
-            }
-    
-            /* Responsive Design */
-            @media (max-width: 640px) {
-                .swb-catalog-header {
-                    flex-direction: column;
-                }
-    
-                .swb-catalog-header-control,
-                .swb-sort-select {
-                    width: 100%;
-                }
-            }
-        `;
-    
-        // Remove existing custom styles if they exist
-        const existingStyles = document.querySelector('#swb-custom-styles');
-        if (existingStyles) {
-            existingStyles.remove();
-        }
-    
-        const styleSheet = document.createElement('style');
-        styleSheet.id = 'swb-custom-styles';
-        styleSheet.textContent = customStyles;
-        document.head.appendChild(styleSheet);
-    }
-
     // Helper function to darken/lighten colors
     adjustColor(color, amount) {
         const clamp = (num) => Math.min(255, Math.max(0, num));
@@ -627,9 +413,13 @@ class SenangWebsBuy {
             itemElement.innerHTML = `
                 <div class="swb-item-name">${item.name}</div>
                 <div class="swb-item-quantity">
-                    <button onclick="swb.updateQuantity('${item.sku}', -1)">-</button>
+                    <button onclick="swb.updateQuantity('${item.sku}', -1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12" fill="currentColor"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32v-32c0-17.7-14.3-32-32-32z"/></svg>
+                    </button>
                     <span>${item.quantity}</span>
-                    <button onclick="swb.updateQuantity('${item.sku}', 1)">+</button>
+                    <button onclick="swb.updateQuantity('${item.sku}', 1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12" fill="currentColor"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208H272V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32v144H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32h144v144c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V304h144c17.7 0 32-14.3 32-32v-32c0-17.7-14.3-32-32-32z"/></svg>
+                    </button>
                 </div>
                 <div class="swb-item-price">${this.formatPrice(item.price * item.quantity)}</div>
                 <button onclick="swb.removeFromCart('${item.sku}')" class="swb-remove-item">
@@ -683,7 +473,10 @@ class SenangWebsBuy {
             modal.classList.add('swb-cart-modal');
             modal.innerHTML = `
                 <div class="swb-modal-content">
-                    <button class="swb-modal-close">×</button>
+                    <button class="swb-modal-close">
+                        ╳
+
+                    </button>
                     <div class="swb-cart-header">
                         <h2>Your Cart</h2>
                     </div>
@@ -694,6 +487,7 @@ class SenangWebsBuy {
                     <div class="swb-cart-items"></div>
                     <div class="swb-cart-total">Total: $0.00</div>
                     <form class="swb-checkout-form">
+                        <h2>Billing Details</h2>
                         <input type="text" name="name" placeholder="Full Name" required>
                         <input type="email" name="email" placeholder="Email" required>
                         <input type="tel" name="phone" placeholder="Phone Number" required>
@@ -802,18 +596,23 @@ const styles = `
     .swb-modal-content {
         position: relative;
         background: white;
-        margin: 50px auto;
+        margin: 32px auto;
         padding: 20px;
         width: 90%;
         max-width: 600px;
-        border-radius: 8px;
+        border-radius: 16px;
     }
 
     .swb-modal-close {
         position: absolute;
-        right: 10px;
-        top: 10px;
-        font-size: 24px;
+        right: 20px;
+        top: 20px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
         cursor: pointer;
         border: none;
         background: none;
@@ -822,24 +621,37 @@ const styles = `
     .swb-cart-item {
         display: grid;
         grid-template-columns: 2fr 1fr 1fr auto;
-        gap: 10px;
+        gap: 8px;
         align-items: center;
-        padding: 10px 0;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .swb-cart-total {
+        padding: 16px 0;
+        font-weight: bold;
+        font-size: 18px;
+        text-align: center;
         border-bottom: 1px solid #eee;
     }
 
     .swb-checkout-form {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        margin-top: 20px;
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .swb-checkout-form h2 {
+        font-size: 12px;
+        font-weight: bold;
     }
 
     .swb-checkout-form input,
     .swb-checkout-form textarea {
         padding: 8px;
         border: 1px solid #ddd;
-        border-radius: 4px;
+        border-radius: 8px;
     }
 
     .swb-item-quantity {
