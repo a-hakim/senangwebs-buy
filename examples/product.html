@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SenangWebs Buy Demo - Modern E-commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../dist/swb.js" defer></script>
+    <link rel="stylesheet" href="../dist/swb.css">
+</head>
+
+<body class="min-h-screen bg-gray-100">
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h4 class="text-xl lg:text-2xl capitalize font-bold mb-4">Product</h4>
+
+        <div class="flex justify-between">
+            <!-- Independent Add to Cart Button -->
+            <button data-swb-store-id="techgear-store" data-swb-product-sku="TECH001"
+                data-swb-product-name="Product Name" data-swb-product-price="99.99"
+                class="bg-blue-600 text-white rounded-lg text-lg font-semibold px-6 w-full lg:max-w-max h-12 flex items-center justify-center hover:opacity-80">
+                Add to Cart
+            </button>
+
+            <!-- Independent Cart View Button -->
+            <button data-swb-cart data-swb-store-id="techgear-store" data-swb-color-secondary="#DC2626"
+                class="border-blue-600 border-2 text-blue-600 rounded-lg text-lg font-semibold px-6 w-full lg:max-w-max h-12 flex items-center justify-center hover:opacity-80">
+                Cart (<span data-swb-cart-count></span>)
+            </button>
+        </div>
+    </main>
+
+</body>
+
+</html>

@@ -1,8 +1,7 @@
 // SenangWebs Buy Library
 class SenangWebsBuy {
     constructor() {
-        this.cart = [];
-        this.storeInfo = {};
+        this.stores = new Map();
         this.colors = {
             primary: '#007bff',
             secondary: '#dc3545'
@@ -21,43 +20,66 @@ class SenangWebsBuy {
     }
 
     init() {
-        this.loadCartFromStorage();
-        this.initializeCatalog();
+        this.initializeCatalogs();
+        this.initializeIndependentButtons();
         this.setupEventListeners();
-        this.updateCartCount();
-        this.renderCart();
+        this.updateCustomProperties();
     }
 
-    loadCartFromStorage() {
-        const savedCart = localStorage.getItem('swb-cart');
+    initializeStore(storeId, storeData = {}) {
+        if (!this.stores.has(storeId)) {
+            this.stores.set(storeId, {
+                cart: this.loadCartFromStorage(storeId),
+                info: {
+                    name: storeData.name || storeId,
+                    whatsapp: storeData.whatsapp || '',
+                    cartEnabled: storeData.cartEnabled !== false,
+                    floatingCart: storeData.floatingCart || false
+                },
+                products: [],
+                filteredProducts: [],
+                sortState: {
+                    field: 'name',
+                    direction: 'asc'
+                }
+            });
+        }
+        return this.stores.get(storeId);
+    }
+
+    loadCartFromStorage(storeId) {
+        const storageKey = `swb-cart-${storeId}`;
+        const savedCart = localStorage.getItem(storageKey);
         if (savedCart) {
             try {
-                this.cart = JSON.parse(savedCart);
+                return JSON.parse(savedCart);
             } catch (e) {
-                this.cart = [];
-                localStorage.removeItem('swb-cart');
+                localStorage.removeItem(storageKey);
             }
         }
+        return [];
     }
 
-    saveCartToStorage() {
-        localStorage.setItem('swb-cart', JSON.stringify(this.cart));
+    saveCartToStorage(storeId, cart) {
+        const storageKey = `swb-cart-${storeId}`;
+        localStorage.setItem(storageKey, JSON.stringify(cart));
     }
 
-    clearCart() {
-        this.cart = [];
-        this.saveCartToStorage();
-        this.updateCartCount();
-        this.renderCart();
-        this.closeCheckout();
+    clearCart(storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
+        store.cart = [];
+        this.saveCartToStorage(storeId, store.cart);
+        this.updateCartCount(storeId);
+        this.renderCart(storeId);
+        this.closeCheckout(storeId);
     }
 
-    // Update color variables in CSS
     updateCustomProperties() {
         document.documentElement.style.setProperty('--swb-color-primary', this.colors.primary);
         document.documentElement.style.setProperty('--swb-color-secondary', this.colors.secondary);
         
-        // Convert hex to rgb for rgba usage
         const primaryRGB = this.hexToRGB(this.colors.primary);
         const secondaryRGB = this.hexToRGB(this.colors.secondary);
         
@@ -65,7 +87,6 @@ class SenangWebsBuy {
         document.documentElement.style.setProperty('--swb-color-secondary-rgb', secondaryRGB);
     }
 
-    // Helper function to convert hex to RGB
     hexToRGB(hex) {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
@@ -73,53 +94,66 @@ class SenangWebsBuy {
         return `${r}, ${g}, ${b}`;
     }
 
-    initializeCatalog() {
-        const catalogElement = document.querySelector('[data-swb-catalog]');
-        if (!catalogElement) return;
+    initializeCatalogs() {
+        const catalogElements = document.querySelectorAll('[data-swb-catalog]');
+        catalogElements.forEach(catalog => {
+            const storeId = catalog.getAttribute('data-swb-store-id');
+            if (!storeId) return;
 
-        // Get store information
-        this.storeInfo = {
-            name: catalogElement.getAttribute('data-swb-store'),
-            whatsapp: catalogElement.getAttribute('data-swb-whatsapp'),
-            floatingCart: catalogElement.hasAttribute('data-swb-cart-floating'),
-            cartEnabled: catalogElement.getAttribute('data-swb-cart') !== 'false'
-        };
+            this.initializeStore(storeId, {
+                name: catalog.getAttribute('data-swb-store'),
+                whatsapp: catalog.getAttribute('data-swb-whatsapp'),
+                floatingCart: catalog.hasAttribute('data-swb-cart-floating'),
+                cartEnabled: catalog.getAttribute('data-swb-cart') !== 'false'
+            });
 
-        // Get custom colors
-        const primaryColor = catalogElement.getAttribute('data-swb-color-primary');
-        const secondaryColor = catalogElement.getAttribute('data-swb-color-secondary');
+            const primaryColor = catalog.getAttribute('data-swb-color-primary');
+            const secondaryColor = catalog.getAttribute('data-swb-color-secondary');
+            if (primaryColor) this.colors.primary = primaryColor;
+            if (secondaryColor) this.colors.secondary = secondaryColor;
 
-        if (primaryColor) this.colors.primary = primaryColor;
-        if (secondaryColor) this.colors.secondary = secondaryColor;
+            const currencyCode = catalog.getAttribute('data-swb-currency');
+            if (currencyCode) this.setCurrency(currencyCode);
 
-        // Update CSS custom properties
-        this.updateCustomProperties();
-
-        // Get currency
-        const currencyCode = catalogElement.getAttribute('data-swb-currency');
-        if (currencyCode) {
-            this.setCurrency(currencyCode);
-        }
-
-        // Create catalog header
-        this.createCatalogHeader(catalogElement);
-
-        // Initialize products
-        const productElements = catalogElement.querySelectorAll('[data-swb-product]');
-        this.products = Array.from(productElements).map(elem => {
-            const nameElement = elem.querySelector('[data-swb-product-name]');
-            return {
-                element: elem,
-                sku: elem.getAttribute('data-swb-product-sku'),
-                name: elem.getAttribute('data-swb-product-name'),
-                price: parseFloat(elem.getAttribute('data-swb-product-price'))
-            };
+            this.createCatalogHeader(catalog, storeId);
+            this.initializeCatalogProducts(catalog, storeId);
         });
-        this.filteredProducts = [...this.products];
+    }
 
-        // Initialize each product
-        this.products.forEach(product => {
-            this.initializeProduct(product.element);
+    initializeIndependentButtons() {
+        document.querySelectorAll('[data-swb-product-sku][data-swb-store-id]').forEach(button => {
+            if (!button.hasAttribute('data-swb-catalog')) {
+                const storeId = button.getAttribute('data-swb-store-id');
+                const sku = button.getAttribute('data-swb-product-sku');
+                
+                this.initializeStore(storeId);
+                
+                button.addEventListener('click', () => {
+                    const product = {
+                        sku: sku,
+                        name: button.getAttribute('data-swb-product-name') || sku,
+                        price: parseFloat(button.getAttribute('data-swb-product-price')) || 0,
+                        quantity: 1
+                    };
+                    this.addToCart(storeId, product);
+                });
+            }
+        });
+
+        document.querySelectorAll('[data-swb-cart][data-swb-store-id]').forEach(button => {
+            if (!button.hasAttribute('data-swb-catalog')) {
+                const storeId = button.getAttribute('data-swb-store-id');
+                this.initializeStore(storeId);
+                
+                button.addEventListener('click', () => {
+                    this.showCheckout(storeId);
+                });
+
+                const counter = button.querySelector('[data-swb-cart-count]');
+                if (counter) {
+                    this.updateCartCount(storeId);
+                }
+            }
         });
     }
 
@@ -139,9 +173,7 @@ class SenangWebsBuy {
             THB: { code: 'THB', symbol: '฿' },
             PHP: { code: 'PHP', symbol: '₱' },
             IDR: { code: 'IDR', symbol: 'Rp' },
-            VND: { code: 'VND', symbol: '₫' },
-            KZT: { code: 'KZT', symbol: '₸' },
-            PLN: { code: 'PLN', symbol: 'zł' }
+            VND: { code: 'VND', symbol: '₫' }
         };
     
         if (currencies[code]) {
@@ -153,18 +185,16 @@ class SenangWebsBuy {
         return `${this.currency.symbol}${amount.toFixed(2)}`;
     }
 
-    createCatalogHeader(catalogElement) {
+    createCatalogHeader(catalog, storeId) {
         const header = document.createElement('div');
         header.classList.add('swb-catalog-header');
     
-        // Create search box
         const searchBox = document.createElement('input');
         searchBox.type = 'text';
         searchBox.placeholder = 'Search products...';
         searchBox.classList.add('swb-search-input');
-        searchBox.addEventListener('input', (e) => this.handleSearch(e.target.value));
+        searchBox.addEventListener('input', (e) => this.handleSearch(e.target.value, storeId));
     
-        // Create sort dropdown
         const sortSelect = document.createElement('select');
         sortSelect.classList.add('swb-sort-select');
         sortSelect.innerHTML = `
@@ -175,51 +205,109 @@ class SenangWebsBuy {
         `;
         sortSelect.addEventListener('change', (e) => {
             const [field, direction] = e.target.value.split('-');
-            this.handleSort(field, direction);
+            this.handleSort(field, direction, storeId);
         });
     
         const headerControl = document.createElement('div');
         headerControl.classList.add('swb-catalog-header-control');
-    
         headerControl.appendChild(sortSelect);
     
-        // Create cart button (if not floating and cart is enabled)
-        if (!this.storeInfo.floatingCart && this.storeInfo.cartEnabled) {
+        const store = this.stores.get(storeId);
+        const count = store.cart.reduce((total, item) => total + item.quantity, 0);
+        if (!store.info.floatingCart && store.info.cartEnabled) {
             const cartBtn = document.createElement('button');
             cartBtn.classList.add('swb-cart-button');
             cartBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 576 512">
                     <path d="M528.1 301.3l47.3-208C578.8 78.3 567.4 64 552 64H159.2l-9.2-44.8C147.8 8 137.9 0 126.5 0H24C10.7 0 0 10.7 0 24v16c0 13.3 10.7 24 24 24h69.9l70.2 343.4C147.3 417.1 136 435.2 136 456c0 30.9 25.1 56 56 56s56-25.1 56-56c0-15.7-6.4-29.8-16.8-40h209.6C430.4 426.2 424 440.3 424 456c0 30.9 25.1 56 56 56s56-25.1 56-56c0-22.2-12.9-41.3-31.6-50.4l5.5-24.3c3.4-15-8-29.3-23.4-29.3H218.1l-6.5-32h293.1c11.2 0 20.9-7.8 23.4-18.7z"/>
                 </svg>
-                <span class="swb-cart-count">0</span>
+                <span class="swb-cart-count" data-swb-cart-count>${count}</span>
             `;
-            cartBtn.addEventListener('click', () => this.showCheckout());
+            cartBtn.addEventListener('click', () => this.showCheckout(storeId));
             headerControl.appendChild(cartBtn);
         }
     
         header.appendChild(searchBox);
         header.appendChild(headerControl);
-    
-        catalogElement.insertBefore(header, catalogElement.firstChild);
+        catalog.insertBefore(header, catalog.firstChild);
     }
 
-    handleSearch(query) {
+    initializeCatalogProducts(catalog, storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
+        const productElements = catalog.querySelectorAll('[data-swb-product]');
+        store.products = Array.from(productElements).map(elem => {
+            return {
+                element: elem,
+                sku: elem.getAttribute('data-swb-product-sku'),
+                name: elem.getAttribute('data-swb-product-name'),
+                price: parseFloat(elem.getAttribute('data-swb-product-price'))
+            };
+        });
+        store.filteredProducts = [...store.products];
+
+        store.products.forEach(product => {
+            this.initializeProduct(product.element, storeId);
+        });
+    }
+
+    initializeProduct(productElement, storeId) {
+        const buttonsContainer = productElement.querySelector('[data-swb-product-buttons]');
+        if (!buttonsContainer) return;
+    
+        const externalLink = productElement.getAttribute('data-swb-product-link');
+        const externalLinkTitle = productElement.getAttribute('data-swb-product-link-title');
+        if (externalLink && externalLinkTitle) {
+            const linkBtn = document.createElement('a');
+            linkBtn.href = externalLink;
+            linkBtn.target = "_blank";
+            linkBtn.rel = "noopener noreferrer";
+            linkBtn.classList.add('swb-external-link');
+            linkBtn.innerHTML = `<span>${externalLinkTitle}</span>`;
+            buttonsContainer.appendChild(linkBtn);
+        }
+    
+        const store = this.stores.get(storeId);
+        if (store && store.info.cartEnabled) {
+            const cartBtnTitle = productElement.getAttribute('data-swb-product-add-cart-title');
+            const addToCartBtn = document.createElement('button');
+            addToCartBtn.textContent = cartBtnTitle || 'Add to Cart';
+            addToCartBtn.classList.add('swb-add-to-cart');
+            addToCartBtn.onclick = () => {
+                const product = {
+                    sku: productElement.getAttribute('data-swb-product-sku'),
+                    name: productElement.getAttribute('data-swb-product-name'),
+                    price: parseFloat(productElement.getAttribute('data-swb-product-price')),
+                    quantity: 1
+                };
+                this.addToCart(storeId, product);
+            };
+            buttonsContainer.appendChild(addToCartBtn);
+        }
+    }
+
+    handleSearch(query, storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
         query = query.toLowerCase();
-        this.filteredProducts = this.products.filter(product =>
+        store.filteredProducts = store.products.filter(product =>
             product.name.toLowerCase().includes(query) ||
             product.sku.toLowerCase().includes(query)
         );
-        this.updateProductDisplay();
+        this.updateProductDisplay(storeId);
     }
 
-    handleSort(field, direction = 'asc') {
-        this.sortState.field = field;
-        this.sortState.direction = direction;
+    handleSort(field, direction, storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
 
-        // Copy the filtered products to avoid mutating the original array
-        const sortedProducts = [...this.filteredProducts];
+        store.sortState.field = field;
+        store.sortState.direction = direction;
 
-        // Sort the products
+        const sortedProducts = [...store.filteredProducts];
+
         sortedProducts.sort((a, b) => {
             let valueA, valueB;
 
@@ -240,253 +328,184 @@ class SenangWebsBuy {
             }
         });
 
-        // Update filtered products with sorted array
-        this.filteredProducts = sortedProducts;
-
-        // Update display
-        this.updateProductDisplay();
+        store.filteredProducts = sortedProducts;
+        this.updateProductDisplay(storeId);
     }
 
-    updateSortIndicators() {
-        const indicators = document.querySelectorAll('.swb-sort-indicator');
-        indicators.forEach(indicator => {
-            indicator.textContent = '';
-        });
+    updateProductDisplay(storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
 
-        // Find the active sort button by looking at all sort buttons
-        const sortButtons = document.querySelectorAll('.swb-sort-button');
-        sortButtons.forEach(button => {
-            // Check if button text contains the current sort field
-            const buttonText = button.textContent.toLowerCase();
-            const isActiveButton =
-                (this.sortState.field === 'name' && buttonText.includes('name')) ||
-                (this.sortState.field === 'price' && buttonText.includes('price'));
+        const catalog = document.querySelector(`[data-swb-catalog][data-swb-store-id="${storeId}"]`);
+        if (!catalog) return;
 
-            if (isActiveButton) {
-                const indicator = button.querySelector('.swb-sort-indicator');
-                if (indicator) {
-                    indicator.textContent = this.sortState.direction === 'asc' ? ' ↑' : ' ↓';
-                }
-            }
-        });
-    }
-
-    updateProductDisplay() {
-        const container = document.querySelector('[data-swb-catalog]');
-        if (!container) return;
-
-        const productGrid = container.querySelector('.grid');
+        const productGrid = catalog.querySelector('.grid');
         if (!productGrid) return;
 
-        // Remove all products from the grid
         Array.from(productGrid.children).forEach(child => {
             productGrid.removeChild(child);
         });
 
-        // Add filtered products back in sorted order
-        this.filteredProducts.forEach(product => {
+        store.filteredProducts.forEach(product => {
             productGrid.appendChild(product.element);
         });
     }
 
     setupEventListeners() {
-        // Only create floating cart if specified
-        if (this.storeInfo.floatingCart && this.storeInfo.cartEnabled) {
-            this.createCartIcon();
-        }
-    
         document.addEventListener('click', (e) => {
-            const closeButton = document.querySelector('.swb-modal-close');
-    
-            if (closeButton && (e.target === closeButton || closeButton.contains(e.target))) {
-                this.closeCheckout();
+            if (e.target.matches('.swb-modal-close') || e.target.closest('.swb-modal-close')) {
+                const modal = e.target.closest('.swb-cart-modal');
+                if (modal) {
+                    const storeId = modal.getAttribute('data-swb-store-id');
+                    this.closeCheckout(storeId);
+                }
             }
         });
     }
 
-    updateCartCount() {
-        const count = this.cart.reduce((total, item) => total + item.quantity, 0);
+    updateCartCount(storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
 
-        // Update all cart count displays
-        const cartCountElements = document.querySelectorAll('.swb-cart-count');
-        cartCountElements.forEach(element => {
-            // Check if this is in the modal subheader
-            if (element.closest('.swb-cart-subheader')) {
-                element.textContent = this.cart.length; // Show number of unique items
+        const count = store.cart.reduce((total, item) => total + item.quantity, 0);
+
+        document.querySelectorAll(`[data-swb-store-id="${storeId}"] [data-swb-cart-count]`).forEach(counter => {
+            counter.textContent = count;
+        });
+
+        const modalCounters = document.querySelectorAll(`.swb-cart-modal[data-swb-store-id="${storeId}"] .swb-cart-count`);
+        modalCounters.forEach(counter => {
+            if (counter.closest('.swb-cart-subheader')) {
+                counter.textContent = store.cart.length;
             } else {
-                element.textContent = count; // Show total quantity for cart icon
+                counter.textContent = count;
             }
         });
     }
 
-    // Helper function to darken/lighten colors
-    adjustColor(color, amount) {
-        const clamp = (num) => Math.min(255, Math.max(0, num));
+    addToCart(storeId, product) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
 
-        // Convert hex to RGB
-        const hex = color.replace('#', '');
-        const r = parseInt(hex.substr(0, 2), 16);
-        const g = parseInt(hex.substr(2, 2), 16);
-        const b = parseInt(hex.substr(4, 2), 16);
-
-        // Adjust each component
-        const adjustR = clamp(r + amount);
-        const adjustG = clamp(g + amount);
-        const adjustB = clamp(b + amount);
-
-        // Convert back to hex
-        return '#' + [adjustR, adjustG, adjustB]
-            .map(x => x.toString(16).padStart(2, '0'))
-            .join('');
-    }
-
-    initializeProduct(productElement) {
-        const buttonsContainer = productElement.querySelector('[data-swb-product-buttons]');
-        if (!buttonsContainer) return;
-    
-        // Add external link button if link is provided
-        const externalLink = productElement.getAttribute('data-swb-product-link');
-        const externalLinkTitle = productElement.getAttribute('data-swb-product-link-title');
-        if (externalLink && externalLinkTitle) {
-            const linkBtn = document.createElement('a');
-            linkBtn.href = externalLink;
-            linkBtn.target = "_blank";
-            linkBtn.rel = "noopener noreferrer";
-            linkBtn.classList.add('swb-external-link');
-            linkBtn.innerHTML = `
-                <span>${externalLinkTitle}</span>
-            `;
-            buttonsContainer.appendChild(linkBtn);
-        }
-    
-        // Add cart button if cart is enabled
-        const cartBtnTitle = productElement.getAttribute('data-swb-product-add-cart-title');
-        if (this.storeInfo.cartEnabled) {
-            const addToCartBtn = document.createElement('button');
-            addToCartBtn.textContent = cartBtnTitle || 'Add to Cart';
-            addToCartBtn.classList.add('swb-add-to-cart');
-            addToCartBtn.onclick = () => this.addToCart(productElement);
-            buttonsContainer.appendChild(addToCartBtn);
-        }
-    }
-
-    createCartIcon() {
-        const cartIcon = document.createElement('div');
-        cartIcon.classList.add('swb-cart-icon');
-        const totalCount = this.cart.reduce((total, item) => total + item.quantity, 0);
-        cartIcon.innerHTML = `
-            <div class="swb-cart-count">${totalCount}</div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 576 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M528.1 301.3l47.3-208C578.8 78.3 567.4 64 552 64H159.2l-9.2-44.8C147.8 8 137.9 0 126.5 0H24C10.7 0 0 10.7 0 24v16c0 13.3 10.7 24 24 24h69.9l70.2 343.4C147.3 417.1 136 435.2 136 456c0 30.9 25.1 56 56 56s56-25.1 56-56c0-15.7-6.4-29.8-16.8-40h209.6C430.4 426.2 424 440.3 424 456c0 30.9 25.1 56 56 56s56-25.1 56-56c0-22.2-12.9-41.3-31.6-50.4l5.5-24.3c3.4-15-8-29.3-23.4-29.3H218.1l-6.5-32h293.1c11.2 0 20.9-7.8 23.4-18.7z"/></svg>
-        `;
-        cartIcon.onclick = () => this.showCheckout();
-        document.body.appendChild(cartIcon);
-    }
-
-    addToCart(productElement) {
-        const product = {
-            sku: productElement.getAttribute('data-swb-product-sku'),
-            name: productElement.getAttribute('data-swb-product-name'),
-            price: parseFloat(productElement.getAttribute('data-swb-product-price')),
-            quantity: 1
-        };
-
-        const existingProduct = this.cart.find(item => item.sku === product.sku);
+        const existingProduct = store.cart.find(item => item.sku === product.sku);
         if (existingProduct) {
             existingProduct.quantity++;
         } else {
-            this.cart.push(product);
+            store.cart.push(product);
         }
 
-        this.saveCartToStorage();
-        this.updateCartCount();
-        this.renderCart();
+        this.saveCartToStorage(storeId, store.cart);
+        this.updateCartCount(storeId);
+        this.renderCart(storeId);
     }
 
-    renderCart() {
-        const cartModal = document.querySelector('.swb-cart-modal');
+    renderCart(storeId) {
+        const cartModal = document.querySelector(`.swb-cart-modal[data-swb-store-id="${storeId}"]`);
         if (!cartModal) return;
+
+        const store = this.stores.get(storeId);
+        if (!store) return;
     
         const cartItems = cartModal.querySelector('.swb-cart-items');
         cartItems.innerHTML = '';
     
-        this.cart.forEach(item => {
+        store.cart.forEach(item => {
             const itemElement = document.createElement('div');
             itemElement.classList.add('swb-cart-item');
             itemElement.innerHTML = `
                 <div class="swb-item-name">${item.name}</div>
                 <div class="swb-item-quantity">
-                    <button onclick="swb.updateQuantity('${item.sku}', -1)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12" fill="currentColor"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32v-32c0-17.7-14.3-32-32-32z"/></svg>
+                    <button onclick="swb.updateQuantity('${storeId}', '${item.sku}', -1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12" fill="currentColor">
+                            <path d="M416 208H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32v-32c0-17.7-14.3-32-32-32z"/>
+                        </svg>
                     </button>
                     <span>${item.quantity}</span>
-                    <button onclick="swb.updateQuantity('${item.sku}', 1)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12" fill="currentColor"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208H272V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32v144H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32h144v144c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V304h144c17.7 0 32-14.3 32-32v-32c0-17.7-14.3-32-32-32z"/></svg>
+                    <button onclick="swb.updateQuantity('${storeId}', '${item.sku}', 1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12" fill="currentColor">
+                            <path d="M416 208H272V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32v144H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32h144v144c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V304h144c17.7 0 32-14.3 32-32v-32c0-17.7-14.3-32-32-32z"/>
+                        </svg>
                     </button>
                 </div>
                 <div class="swb-item-price">${this.formatPrice(item.price * item.quantity)}</div>
-                <button onclick="swb.removeFromCart('${item.sku}')" class="swb-remove-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 352 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M242.7 256l100.1-100.1c12.3-12.3 12.3-32.2 0-44.5l-22.2-22.2c-12.3-12.3-32.2-12.3-44.5 0L176 189.3 75.9 89.2c-12.3-12.3-32.2-12.3-44.5 0L9.2 111.5c-12.3 12.3-12.3 32.2 0 44.5L109.3 256 9.2 356.1c-12.3 12.3-12.3 32.2 0 44.5l22.2 22.2c12.3 12.3 32.2 12.3 44.5 0L176 322.7l100.1 100.1c12.3 12.3 32.2 12.3 44.5 0l22.2-22.2c12.3-12.3 12.3-32.2 0-44.5L242.7 256z"/></svg>
+                <button onclick="swb.removeFromCart('${storeId}', '${item.sku}')" class="swb-remove-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 352 512">
+                        <path d="M242.7 256l100.1-100.1c12.3-12.3 12.3-32.2 0-44.5l-22.2-22.2c-12.3-12.3-32.2-12.3-44.5 0L176 189.3 75.9 89.2c-12.3-12.3-32.2-12.3-44.5 0L9.2 111.5c-12.3 12.3-12.3 32.2 0 44.5L109.3 256 9.2 356.1c-12.3 12.3-12.3 32.2 0 44.5l22.2 22.2c12.3 12.3 32.2 12.3 44.5 0L176 322.7l100.1 100.1c12.3 12.3 32.2 12.3 44.5 0l22.2-22.2c12.3-12.3 12.3-32.2 0-44.5L242.7 256z"/>
+                    </svg>
                 </button>
             `;
             cartItems.appendChild(itemElement);
         });
     
-        this.updateTotal();
+        this.updateTotal(storeId);
     }
 
-    updateQuantity(sku, change) {
-        const product = this.cart.find(item => item.sku === sku);
+    updateQuantity(storeId, sku, change) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
+        const product = store.cart.find(item => item.sku === sku);
         if (product) {
             product.quantity += change;
             if (product.quantity <= 0) {
-                this.removeFromCart(sku);
+                this.removeFromCart(storeId, sku);
             } else {
-                this.saveCartToStorage();
-                this.renderCart();
-                this.updateCartCount();
+                this.saveCartToStorage(storeId, store.cart);
+                this.renderCart(storeId);
+                this.updateCartCount(storeId);
             }
         }
     }
 
-    removeFromCart(sku) {
-        this.cart = this.cart.filter(item => item.sku !== sku);
-        this.saveCartToStorage();
-        this.renderCart();
-        this.updateCartCount();
+    removeFromCart(storeId, sku) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
+        store.cart = store.cart.filter(item => item.sku !== sku);
+        this.saveCartToStorage(storeId, store.cart);
+        this.renderCart(storeId);
+        this.updateCartCount(storeId);
     }
 
-    updateTotal() {
-        const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const totalElement = document.querySelector('.swb-cart-total');
+    updateTotal(storeId) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
+        const total = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalElement = document.querySelector(`.swb-cart-modal[data-swb-store-id="${storeId}"] .swb-cart-total`);
         if (totalElement) {
             totalElement.textContent = `Total: ${this.formatPrice(total)}`;
         }
     }
 
-    showCheckout() {
-        if (this.cart.length === 0) {
+    showCheckout(storeId) {
+        const store = this.stores.get(storeId);
+        if (!store || store.cart.length === 0) {
             alert('Your cart is empty');
             return;
         }
 
-        let modal = document.querySelector('.swb-cart-modal');
+        let modal = document.querySelector(`.swb-cart-modal[data-swb-store-id="${storeId}"]`);
         if (!modal) {
             modal = document.createElement('div');
             modal.classList.add('swb-cart-modal');
+            modal.setAttribute('data-swb-store-id', storeId);
             modal.innerHTML = `
                 <div class="swb-modal-content">
                     <div class="swb-cart-header">
                         <h2>Your Cart</h2>
                     </div>
                     <div class="swb-modal-close">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="16" height="16" fill="currentColor"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M242.7 256l100.1-100.1c12.3-12.3 12.3-32.2 0-44.5l-22.2-22.2c-12.3-12.3-32.2-12.3-44.5 0L176 189.3 75.9 89.2c-12.3-12.3-32.2-12.3-44.5 0L9.2 111.5c-12.3 12.3-12.3 32.2 0 44.5L109.3 256 9.2 356.1c-12.3 12.3-12.3 32.2 0 44.5l22.2 22.2c12.3 12.3 32.2 12.3 44.5 0L176 322.7l100.1 100.1c12.3 12.3 32.2 12.3 44.5 0l22.2-22.2c12.3-12.3 12.3-32.2 0-44.5L242.7 256z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="16" height="16" fill="currentColor">
+                            <path d="M242.7 256l100.1-100.1c12.3-12.3 12.3-32.2 0-44.5l-22.2-22.2c-12.3-12.3-32.2-12.3-44.5 0L176 189.3 75.9 89.2c-12.3-12.3-32.2-12.3-44.5 0L9.2 111.5c-12.3 12.3-12.3 32.2 0 44.5L109.3 256 9.2 356.1c-12.3 12.3-12.3 32.2 0 44.5l22.2 22.2c12.3 12.3 32.2 12.3 44.5 0L176 322.7l100.1 100.1c12.3 12.3 32.2 12.3 44.5 0l22.2-22.2c12.3-12.3 12.3-32.2 0-44.5L242.7 256z"/>
+                        </svg>
                     </div>
                     <div class="swb-cart-subheader">
                         <p>Items</p>
                         <button class="swb-clear-cart">Clear All</button>
                     </div>
                     <div class="swb-cart-items"></div>
-                    <div class="swb-cart-total">Total: $0.00</div>
+                    <div class="swb-cart-total">Total: ${this.formatPrice(0)}</div>
                     <form class="swb-checkout-form">
                         <h2>Billing Details</h2>
                         <input type="text" name="name" placeholder="Full Name" required>
@@ -499,35 +518,36 @@ class SenangWebsBuy {
             `;
             document.body.appendChild(modal);
 
-            // Setup form submission
             const form = modal.querySelector('.swb-checkout-form');
             form.onsubmit = (e) => {
                 e.preventDefault();
-                this.processCheckout(new FormData(form));
+                this.processCheckout(storeId, new FormData(form));
             };
 
-            // Setup clear all button
             const clearBtn = modal.querySelector('.swb-clear-cart');
             clearBtn.onclick = () => {
                 if (confirm('Are you sure you want to clear your cart?')) {
-                    this.clearCart();
+                    this.clearCart(storeId);
                 }
             };
         }
 
-        this.renderCart();
-        this.updateCartCount(); // Ensure count is updated when modal is shown
+        this.renderCart(storeId);
+        this.updateCartCount(storeId);
         modal.style.display = 'block';
     }
 
-    closeCheckout() {
-        const modal = document.querySelector('.swb-cart-modal');
+    closeCheckout(storeId) {
+        const modal = document.querySelector(`.swb-cart-modal[data-swb-store-id="${storeId}"]`);
         if (modal) {
             modal.style.display = 'none';
         }
     }
 
-    processCheckout(formData) {
+    processCheckout(storeId, formData) {
+        const store = this.stores.get(storeId);
+        if (!store) return;
+
         const customerInfo = {
             name: formData.get('name'),
             email: formData.get('email'),
@@ -535,20 +555,19 @@ class SenangWebsBuy {
             address: formData.get('address')
         };
 
-        const message = this.formatWhatsAppMessage(customerInfo);
-        const whatsappUrl = `https://wa.me/${this.storeInfo.whatsapp}?text=${encodeURIComponent(message)}`;
+        const message = this.formatWhatsAppMessage(storeId, customerInfo);
+        const whatsappUrl = `https://wa.me/${store.info.whatsapp}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
 
-        // Clear cart after successful checkout
-        localStorage.removeItem('swb-cart');
-        this.cart = [];
-        this.updateCartCount();
-        this.closeCheckout();
+        this.clearCart(storeId);
     }
 
-    formatWhatsAppMessage(customerInfo) {
+    formatWhatsAppMessage(storeId, customerInfo) {
+        const store = this.stores.get(storeId);
+        if (!store) return '';
+
         const orderDate = new Date().toLocaleString();
-        let message = `New Order from ${this.storeInfo.name}\n`;
+        let message = `New Order from ${store.info.name}\n`;
         message += `Date: ${orderDate}\n\n`;
         message += `Customer Information:\n`;
         message += `Name: ${customerInfo.name}\n`;
@@ -557,13 +576,13 @@ class SenangWebsBuy {
         message += `Address: ${customerInfo.address}\n\n`;
         message += `Order Details:\n`;
         
-        this.cart.forEach(item => {
+        store.cart.forEach(item => {
             message += `- ${item.name} (SKU: ${item.sku})\n`;
             message += `  Quantity: ${item.quantity}\n`;
             message += `  Price: ${this.formatPrice(item.price * item.quantity)}\n\n`;
         });
     
-        const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         message += `Total Amount: ${this.formatPrice(total)}`;
     
         return message;
