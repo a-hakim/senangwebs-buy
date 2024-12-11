@@ -8,6 +8,7 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that enables easy imple
 ## Features
 
 - Easy HTML attribute-based configuration
+- Supports multiple stores and catalogs on the same page
 - Shopping cart with localStorage persistence
 - WhatsApp checkout integration
 - Product sorting and searching
@@ -15,6 +16,7 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that enables easy imple
 - Custom color theming
 - External product links
 - Customizable button text
+- Standalone "Add to Cart" and "View Cart" buttons
 - Fully responsive design
 - No external dependencies
 
@@ -40,6 +42,7 @@ Include SenangWebs Buy directly in your HTML file:
 
 ```html
 <div data-swb-catalog 
+     data-swb-store-id="store1"
      data-swb-store="Your Store Name" 
      data-swb-whatsapp="+1234567890"
      data-swb-currency="USD"
@@ -70,6 +73,19 @@ Include SenangWebs Buy directly in your HTML file:
         <div data-swb-product-buttons></div>
     </div>
 </div>
+
+<!-- Standalone Add to Cart button -->
+<button data-swb-product-sku="PROD002" 
+        data-swb-product-name="Another Product"
+        data-swb-product-price="49.99"
+        data-swb-store-id="store1">
+  Add to Cart
+</button>
+
+<!-- Standalone View Cart button -->
+<button data-swb-cart data-swb-store-id="store1">
+  View Cart (<span data-swb-cart-count>0</span>)
+</button>
 ```
 
 ## Configuration Options
@@ -79,6 +95,7 @@ Include SenangWebs Buy directly in your HTML file:
 | Attribute | Type | Description | Default |
 |-----------|------|-------------|---------|
 | `data-swb-catalog` | flag | Main container identifier | required |
+| `data-swb-store-id` | string | Unique store identifier | required |
 | `data-swb-store` | string | Store name for messages | required |
 | `data-swb-whatsapp` | string | WhatsApp number for checkout | required |
 | `data-swb-currency` | string | Currency code (USD, EUR, MYR, etc.) | USD |
@@ -100,6 +117,17 @@ Include SenangWebs Buy directly in your HTML file:
 | `data-swb-product-add-cart-title` | string | Add to cart button text | "Add to Cart" |
 | `data-swb-product-buttons` | flag | Container for product buttons | required |
 
+### Standalone Button Attributes
+
+| Attribute | Type | Description | Default |
+|-----------|------|-------------|---------|
+| `data-swb-store-id` | string | Unique store identifier | required |
+| `data-swb-product-sku` | string | Product SKU/ID | required |
+| `data-swb-product-name` | string | Product name | required |
+| `data-swb-product-price` | number | Product price | required |
+| `data-swb-cart` | flag | Identifier for standalone cart button | none |
+| `data-swb-cart-count` | flag | Container for cart item count | none |
+
 ## Supported Currencies
 
 The library supports multiple currencies including:
@@ -117,11 +145,17 @@ The library supports multiple currencies including:
 
 ## Features
 
+### Multiple Stores and Catalogs
+
+- Supports multiple independent stores on the same page
+- Each store has its own cart, theme, currency, and checkout
+- Stores can be mixed with standalone cart and product buttons
+
 ### Shopping Cart
 
 - Persists across page refreshes
 - Add/remove products
-- Update quantities
+- Update quantities 
 - Clear all items
 - Shows total items and amount
 
@@ -130,7 +164,7 @@ The library supports multiple currencies including:
 - Search by name or SKU
 - Sort options:
   - Name (A to Z)
-  - Name (Z to A)
+  - Name (Z to A) 
   - Price (Low to High)
   - Price (High to Low)
 
@@ -138,7 +172,7 @@ The library supports multiple currencies including:
 
 1. Collects customer information:
    - Full Name
-   - Email
+   - Email  
    - Phone Number
    - Delivery Address
 2. Formats order details with currency
@@ -149,7 +183,7 @@ The library supports multiple currencies including:
 - Custom button text for each product
 - External link option per product
 - Cart toggle functionality
-- Color theme customization
+- Color theme customization 
 - Currency selection
 - Responsive design
 
@@ -158,7 +192,7 @@ The library supports multiple currencies including:
 Works on all modern browsers including:
 - Chrome
 - Firefox
-- Safari
+- Safari 
 - Edge
 - Opera
 
