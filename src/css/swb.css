@@ -114,8 +114,13 @@
     background: var(--swb-color-secondary, #dc3545);
     color: white;
     border-radius: 50%;
-    padding: 4px 8px;
     font-size: 12px;
+    display: flex;
+    min-width: 24px;
+    width: fit-content;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Cart Modal */

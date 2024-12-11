@@ -121,12 +121,46 @@ class SenangWebsBuy {
     }
 
     initializeIndependentButtons() {
+        document.querySelectorAll('[data-swb-cart][data-swb-store-id]').forEach(button => {
+            if (!button.hasAttribute('data-swb-catalog')) {
+                const storeId = button.getAttribute('data-swb-store-id');
+
+                this.initializeStore(storeId, {
+                    name: button.getAttribute('data-swb-store'),
+                    whatsapp: button.getAttribute('data-swb-whatsapp'),
+                    cartEnabled: true,
+                    floatingCart: false
+                });
+    
+                const primaryColor = button.getAttribute('data-swb-color-primary');
+                const secondaryColor = button.getAttribute('data-swb-color-secondary');
+                if (primaryColor) this.colors.primary = primaryColor;
+                if (secondaryColor) this.colors.secondary = secondaryColor;
+    
+                const currencyCode = button.getAttribute('data-swb-currency');
+                if (currencyCode) this.setCurrency(currencyCode);
+
+                button.addEventListener('click', () => {
+                    this.showCheckout(storeId);
+                });
+
+                const counter = button.querySelector('[data-swb-cart-count]');
+                if (counter) {
+                    this.updateCartCount(storeId);
+                }
+            }
+        });
+
         document.querySelectorAll('[data-swb-product-sku][data-swb-store-id]').forEach(button => {
             if (!button.hasAttribute('data-swb-catalog')) {
                 const storeId = button.getAttribute('data-swb-store-id');
                 const sku = button.getAttribute('data-swb-product-sku');
                 
-                this.initializeStore(storeId);
+                const store = this.stores.get(storeId);
+                if (!store) {
+                    console.warn(`Store ${storeId} not initialized. Make sure you have a cart button with store information.`);
+                    return;
+                }
                 
                 button.addEventListener('click', () => {
                     const product = {
@@ -137,22 +171,6 @@ class SenangWebsBuy {
                     };
                     this.addToCart(storeId, product);
                 });
-            }
-        });
-
-        document.querySelectorAll('[data-swb-cart][data-swb-store-id]').forEach(button => {
-            if (!button.hasAttribute('data-swb-catalog')) {
-                const storeId = button.getAttribute('data-swb-store-id');
-                this.initializeStore(storeId);
-                
-                button.addEventListener('click', () => {
-                    this.showCheckout(storeId);
-                });
-
-                const counter = button.querySelector('[data-swb-cart-count]');
-                if (counter) {
-                    this.updateCartCount(storeId);
-                }
             }
         });
     }
