@@ -1,6 +1,6 @@
 {
   "name": "senangwebs-buy",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Lightweight JavaScript library that that enables easy implementation of e-commerce functionality through HTML attributes",
   "main": "index.js",
   "directories": {
