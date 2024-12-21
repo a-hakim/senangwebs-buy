@@ -35,8 +35,8 @@ npm install senangweb-buy
 Include SenangWebs Buy directly in your HTML file:
 
 ```html
-<script src="https://unpkg.com/senangweb-buy@latest/dist/swb.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/senangweb-buy@latest/dist/swb.css">
+<script src="https://unpkg.com/senangwebs-buy@latest/dist/swb.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/senangwebs-buy@latest/dist/swb.css">
 ```
 
 ## Usage
@@ -51,7 +51,7 @@ Include SenangWebs Buy directly in your HTML file:
      data-swb-currency="USD"
      data-swb-color-primary="#4F46E5"
      data-swb-color-secondary="#EF4444"
-     data-swb-cart-floating="true">
+     data-swb-cart="true">
     
     <!-- Product Item -->
     <div data-swb-product
