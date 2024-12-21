@@ -51,7 +51,8 @@ Include SenangWebs Buy directly in your HTML file:
      data-swb-currency="USD"
      data-swb-color-primary="#4F46E5"
      data-swb-color-secondary="#EF4444"
-     data-swb-cart="true">
+     data-swb-cart="true"
+     data-swb-cart-floating="true">
     
     <!-- Product Item -->
     <div data-swb-product

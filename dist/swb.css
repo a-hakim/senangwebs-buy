@@ -91,6 +91,17 @@
     height: 2.5rem;
 }
 
+.swb-cart-button-floating {
+    position: fixed !important;
+    height: 2.5rem;
+    width: 2.5rem;
+    bottom: 1rem;
+    right: 1rem;
+    padding: .5rem;
+    border-radius: 50%;
+    z-index: 99;
+}
+
 .swb-cart-icon {
     background: var(--swb-color-primary, #007bff);
     position: fixed;
