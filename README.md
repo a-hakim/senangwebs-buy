@@ -58,6 +58,7 @@ Include SenangWebs Buy directly in your HTML file:
      data-swb-cart="true"
      data-swb-cart-floating="true"
      data-swb-checkout-title="Shopping Cart"
+     data-swb-enable-billing="true"
      data-swb-billing-title="Your Information"
      data-swb-submit-text="Place Order"
      data-swb-custom-fields='[
@@ -132,6 +133,7 @@ Include SenangWebs Buy directly in your HTML file:
 | `data-swb-cart` | boolean | Enable/disable cart functionality | true |
 | `data-swb-cart-floating` | boolean | Enable floating cart button | false |
 | `data-swb-checkout-title` | string | Custom checkout modal title | "Your Cart" |
+| `data-swb-enable-billing` | boolean | Enable/disable billing form | true |
 | `data-swb-billing-title` | string | Custom billing form title | "Billing Details" |
 | `data-swb-submit-text` | string | Custom submit button text | "Proceed to WhatsApp" |
 | `data-swb-custom-fields` | JSON | Custom form fields configuration | [] |
