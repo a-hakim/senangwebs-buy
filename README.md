@@ -1,6 +1,3 @@
-[![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-buy/refs/heads/main/src/sw_banner.webp)](https://use.senangwebs.com)
-Learn more at [SenangWebs.com](https://use.senangwebs.com)
-
 # SenangWebs Buy (SWB)
 
 SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML attributes into a full-featured e-commerce solution. Create dynamic shopping experiences with WhatsApp checkout integration, advanced product filtering, multi-store support, and more - all with minimal setup and zero dependencies.
@@ -13,7 +10,7 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML at
 - Declarative HTML attribute-based configuration
 - Multi-store support with independent carts and settings
 - Persistent shopping cart using localStorage
-- WhatsApp-based checkout system
+- WhatsApp-based checkout system with customizable forms
 - Advanced product filtering and sorting
 - Real-time search functionality
 - Multi-currency support with automatic formatting
@@ -24,6 +21,10 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML at
 - Responsive design for all devices
 - Zero external dependencies
 - TypeScript support
+- Custom checkout fields support
+- Customizable checkout UI text
+- Enhanced cart management
+- Advanced billing form options
 
 ## Installation
 
@@ -55,7 +56,14 @@ Include SenangWebs Buy directly in your HTML file:
      data-swb-color-primary="#4F46E5"
      data-swb-color-secondary="#EF4444"
      data-swb-cart="true"
-     data-swb-cart-floating="true">
+     data-swb-cart-floating="true"
+     data-swb-checkout-title="Shopping Cart"
+     data-swb-billing-title="Your Information"
+     data-swb-submit-text="Place Order"
+     data-swb-custom-fields='[
+       {"name": "notes", "type": "textarea", "placeholder": "Order Notes", "required": true},
+       {"name": "size", "type": "select", "placeholder": "Size", "required": true}
+     ]'>
     
     <!-- Product Item -->
     <div data-swb-product
@@ -122,7 +130,11 @@ Include SenangWebs Buy directly in your HTML file:
 | `data-swb-color-primary` | string | Primary theme color (hex) | #007bff |
 | `data-swb-color-secondary` | string | Secondary theme color (hex) | #dc3545 |
 | `data-swb-cart` | boolean | Enable/disable cart functionality | true |
-| `data-swb-cart-floating` | flag | Enable floating cart button | false |
+| `data-swb-cart-floating` | boolean | Enable floating cart button | false |
+| `data-swb-checkout-title` | string | Custom checkout modal title | "Your Cart" |
+| `data-swb-billing-title` | string | Custom billing form title | "Billing Details" |
+| `data-swb-submit-text` | string | Custom submit button text | "Proceed to WhatsApp" |
+| `data-swb-custom-fields` | JSON | Custom form fields configuration | [] |
 
 ### Product Attributes
 
@@ -140,6 +152,31 @@ Include SenangWebs Buy directly in your HTML file:
 
 ## Advanced Features
 
+### Custom Form Fields
+- Support for various field types:
+  - Text inputs
+  - Textareas
+  - Select dropdowns
+  - Custom field types
+- Configurable field attributes:
+  - Required/optional
+  - Placeholders
+  - Custom validation patterns
+  - Min/max values
+- Fields appear in checkout form
+- Data included in WhatsApp message
+
+### Enhanced Checkout Experience
+- Customizable UI text
+- Configurable form titles
+- Custom submit button text
+- Optional billing information
+- Flexible form layout
+- Real-time validation
+- Clear cart functionality
+- Quantity management
+- Price calculations
+
 ### Multi-Store Management
 - Support for multiple independent stores on a single page
 - Each store maintains its own:
@@ -148,6 +185,8 @@ Include SenangWebs Buy directly in your HTML file:
   - Currency configuration
   - WhatsApp checkout
   - Product catalog
+  - Custom fields
+  - Checkout configuration
 
 ### Enhanced Shopping Cart
 - Persistent cart state across page refreshes
@@ -156,6 +195,8 @@ Include SenangWebs Buy directly in your HTML file:
 - Clear cart functionality
 - Cart item count badge
 - Optional floating cart button
+- Individual item removal
+- Bulk clear option
 
 ### Product Management
 - Real-time search by name or SKU
@@ -165,6 +206,7 @@ Include SenangWebs Buy directly in your HTML file:
 - Product grid layout with responsive design
 - Support for product images and descriptions
 - Custom button text and external links
+- Sale badges support
 
 ### Checkout Process
 1. Cart Review
@@ -172,14 +214,17 @@ Include SenangWebs Buy directly in your HTML file:
    - Price summaries
    - Edit quantities
    - Remove items
+   - Clear all option
 2. Customer Information Collection
    - Full Name
    - Email Address
    - Phone Number
    - Delivery Address
+   - Custom Fields
 3. WhatsApp Integration
    - Formatted order details
    - Customer information
+   - Custom field data
    - Total calculations
    - Store identification
 
@@ -190,6 +235,8 @@ Include SenangWebs Buy directly in your HTML file:
 - Modern UI elements
 - Custom button styling
 - Modal interfaces
+- Floating cart design
+- Sale badge styling
 
 ## Supported Currencies
 

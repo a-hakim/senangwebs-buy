@@ -16,9 +16,16 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h4 class="text-xl lg:text-2xl capitalize font-bold mb-4">TechGear Store</h4>
         <!-- Store Catalog -->
-        <div data-swb-catalog data-swb-store-id="techgear-store" data-swb-store="TechGear Store" data-swb-whatsapp="+601016646234"
-            data-swb-color-primary="#0D9488" data-swb-color-secondary="#DC2626" data-swb-currency="MYR"
-            data-swb-cart="true" data-swb-cart-floating="true" class="space-y-8">
+        <div data-swb-catalog data-swb-store-id="techgear-store" data-swb-store="TechGear Store"
+            data-swb-whatsapp="+601016646234" data-swb-color-primary="#0D9488" data-swb-color-secondary="#DC2626"
+            data-swb-currency="MYR" data-swb-cart="true" data-swb-cart-floating="false"
+            data-swb-checkout-title="Shopping Cart" data-swb-billing-title="Your Information"
+            data-swb-submit-text="Place Order" 
+            data-swb-custom-fields='[
+            {"name": "notes", "type": "textarea", "placeholder": "Order Notes", "required": true},
+            {"name": "size", "type": "select", "placeholder": "Size", "required": true}
+          ]'
+            class="space-y-8">
 
             <!-- Product Grid -->
             <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">

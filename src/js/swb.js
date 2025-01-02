@@ -1,5 +1,5 @@
 // SenangWebs Buy Library
-class SenangWebsBuy {
+class SWB {
     constructor() {
         this.stores = new Map();
         this.colors = {
@@ -17,6 +17,7 @@ class SenangWebsBuy {
             symbol: '$'
         };
         this.init();
+        this.checkoutConfig = new Map();
     }
 
     init() {
@@ -34,7 +35,13 @@ class SenangWebsBuy {
                     name: storeData.name || storeId,
                     whatsapp: storeData.whatsapp || '',
                     cartEnabled: storeData.cartEnabled !== false,
-                    floatingCart: storeData.floatingCart || false
+                    floatingCart: storeData.floatingCart || false,
+                    // Add new checkout configuration
+                    checkoutTitle: storeData.checkoutTitle || 'Your Cart',
+                    billingTitle: storeData.billingTitle || 'Billing Details',
+                    submitButtonText: storeData.submitButtonText || 'Proceed to WhatsApp',
+                    enableBilling: storeData.enableBilling !== false,
+                    customFields: storeData.customFields || []
                 },
                 products: [],
                 filteredProducts: [],
@@ -100,11 +107,26 @@ class SenangWebsBuy {
             const storeId = catalog.getAttribute('data-swb-store-id');
             if (!storeId) return;
 
+            let customFields = [];
+            try {
+                const customFieldsAttr = catalog.getAttribute('data-swb-custom-fields');
+                if (customFieldsAttr) {
+                    customFields = JSON.parse(customFieldsAttr);
+                }
+            } catch (e) {
+                console.warn('Invalid custom fields format', e);
+            }
+
             this.initializeStore(storeId, {
                 name: catalog.getAttribute('data-swb-store'),
                 whatsapp: catalog.getAttribute('data-swb-whatsapp'),
                 floatingCart: catalog.hasAttribute('data-swb-cart-floating') ? catalog.getAttribute('data-swb-cart-floating') : false,
-                cartEnabled: catalog.getAttribute('data-swb-cart') !== 'false'
+                cartEnabled: catalog.getAttribute('data-swb-cart') !== 'false',
+                checkoutTitle: catalog.getAttribute('data-swb-checkout-title') || 'Your Cart',
+                billingTitle: catalog.getAttribute('data-swb-billing-title') || 'Billing Details',
+                submitButtonText: catalog.getAttribute('data-swb-submit-text') || 'Proceed to WhatsApp',
+                enableBilling: catalog.getAttribute('data-swb-enable-billing') !== 'false',
+                customFields: customFields
             });
 
             const primaryColor = catalog.getAttribute('data-swb-color-primary');
@@ -511,10 +533,23 @@ class SenangWebsBuy {
             modal = document.createElement('div');
             modal.classList.add('swb-cart-modal');
             modal.setAttribute('data-swb-store-id', storeId);
+            
+            const customFieldsHtml = store.info.customFields.map(field => `
+                <div class="swb-custom-field">
+                    <input type="${field.type || 'text'}" 
+                           name="${field.name}"
+                           placeholder="${field.placeholder || ''}"
+                           ${field.required ? 'required' : ''}
+                           ${field.pattern ? `pattern="${field.pattern}"` : ''}
+                           ${field.min ? `min="${field.min}"` : ''}
+                           ${field.max ? `max="${field.max}"` : ''}>
+                </div>
+            `).join('');
+
             modal.innerHTML = `
                 <div class="swb-modal-content">
                     <div class="swb-cart-header">
-                        <h2>Your Cart</h2>
+                        <h2>${store.info.checkoutTitle}</h2>
                     </div>
                     <div class="swb-modal-close">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="16" height="16" fill="currentColor">
@@ -528,22 +563,27 @@ class SenangWebsBuy {
                     <div class="swb-cart-items"></div>
                     <div class="swb-cart-total">Total: ${this.formatPrice(0)}</div>
                     <form class="swb-checkout-form">
-                        <h2>Billing Details</h2>
+                        ${store.info.enableBilling ? `
+                        <h2>${store.info.billingTitle}</h2>
                         <input type="text" name="name" placeholder="Full Name" required>
                         <input type="email" name="email" placeholder="Email" required>
                         <input type="tel" name="phone" placeholder="Phone Number" required>
                         <textarea name="address" placeholder="Delivery Address" required></textarea>
-                        <button type="submit">Proceed to WhatsApp</button>
+                        ` : ''}
+                        ${customFieldsHtml}
+                        <button type="submit">${store.info.submitButtonText}</button>
                     </form>
                 </div>
             `;
             document.body.appendChild(modal);
 
             const form = modal.querySelector('.swb-checkout-form');
-            form.onsubmit = (e) => {
-                e.preventDefault();
-                this.processCheckout(storeId, new FormData(form));
-            };
+            if (form) {
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    this.processCheckout(storeId, new FormData(form));
+                };
+            }
 
             const clearBtn = modal.querySelector('.swb-clear-cart');
             clearBtn.onclick = () => {
@@ -569,12 +609,10 @@ class SenangWebsBuy {
         const store = this.stores.get(storeId);
         if (!store) return;
 
-        const customerInfo = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            address: formData.get('address')
-        };
+        const customerInfo = {};
+        formData.forEach((value, key) => {
+            customerInfo[key] = value;
+        });
 
         const message = this.formatWhatsAppMessage(storeId, customerInfo);
         const whatsappUrl = `https://wa.me/${store.info.whatsapp}?text=${encodeURIComponent(message)}`;
@@ -590,11 +628,21 @@ class SenangWebsBuy {
         const orderDate = new Date().toLocaleString();
         let message = `New Order from ${store.info.name}\n`;
         message += `Date: ${orderDate}\n\n`;
-        message += `Customer Information:\n`;
-        message += `Name: ${customerInfo.name}\n`;
-        message += `Email: ${customerInfo.email}\n`;
-        message += `Phone: ${customerInfo.phone}\n`;
-        message += `Address: ${customerInfo.address}\n\n`;
+
+        if (store.info.enableBilling) {
+            message += `Customer Information:\n`;
+            message += `Name: ${customerInfo.name}\n`;
+            message += `Email: ${customerInfo.email}\n`;
+            message += `Phone: ${customerInfo.phone}\n`;
+            message += `Address: ${customerInfo.address}\n\n`;
+        }
+
+        store.info.customFields.forEach(field => {
+            if (customerInfo[field.name]) {
+                message += `${field.label || field.name}: ${customerInfo[field.name]}\n`;
+            }
+        });
+        
         message += `Order Details:\n`;
         
         store.cart.forEach(item => {
@@ -610,4 +658,4 @@ class SenangWebsBuy {
     }
 }
 
-window.swb = new SenangWebsBuy();
+window.swb = new SWB();
