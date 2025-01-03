@@ -1,4 +1,4 @@
-[![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-chatbot/refs/heads/main/src/sw_banner.webp)](https://use.senangwebs.com)
+[![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-buy/refs/heads/main/src/sw_banner.webp)](https://use.senangwebs.com)
 Learn more at [SenangWebs.com](https://use.senangwebs.com)
 
 # SenangWebs Buy (SWB)
@@ -9,8 +9,8 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML at
 [https://unpkg.com/senangwebs-buy@latest/examples/store-d/index.html](https://unpkg.com/senangwebs-buy@latest/examples/store-b/index.html)
 
 ## Preview
-[SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-chatbot/refs/heads/main/previews/main.png)
-[SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-chatbot/refs/heads/main/previews/checkout.png)
+![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-buy/refs/heads/main/previews/store.png)
+![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-buy/refs/heads/main/previews/checkout.png)
 
 ## Features
 
