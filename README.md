@@ -1,6 +1,6 @@
 # SenangWebs Buy (SWB)
 
-SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML attributes into a full-featured e-commerce solution. Create dynamic shopping experiences with WhatsApp checkout integration, advanced product filtering, multi-store support, and more - all with minimal setup and zero dependencies.
+SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML attributes into a basic WhatsApp based e-commerce solution. Create dynamic shopping experiences with WhatsApp checkout integration, advanced product filtering, multi-store support, and more - all with minimal setup and zero dependencies.
 
 ## Example
 [https://unpkg.com/senangwebs-buy@latest/examples/store-b/index.html](https://unpkg.com/senangwebs-buy@latest/examples/store-b/index.html)
