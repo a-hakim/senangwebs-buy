@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mak Cik Sarah's Kuih-Muih</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/senangwebs-buy@latest/dist/swb.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/senangwebs-buy@latest/dist/swb.css">
+</head>
+
+<body class="min-h-screen bg-amber-50">
+    <!-- Header -->
+    <header class="bg-green-800 text-white py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl lg:text-3xl font-bold">Mak Cik Sarah's Kuih-Muih</h1>
+            <p class="mt-2 text-green-100">Traditional Malaysian Kuih • Fresh Daily • Delivery Available</p>
+            <p class="mt-1 text-sm text-green-200">📍 Kampung Baru, Kuala Lumpur</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Store Catalog -->
+        <div data-swb-catalog 
+             data-swb-store-id="mak-cik-sarah" 
+             data-swb-store="Mak Cik Sarah's Kuih-Muih" 
+             data-swb-whatsapp="+60123456789"
+             data-swb-color-primary="#166534"
+             data-swb-color-secondary="#DC2626"
+             data-swb-currency="MYR"
+             data-swb-cart="true"
+             data-swb-cart-floating="true"
+             data-swb-checkout-title="Your Order"
+             data-swb-billing-title="Delivery Details"
+             data-swb-submit-text="Place Order on WhatsApp"
+             data-swb-enable-billing="true"
+             data-swb-custom-fields='[
+                {"name": "delivery_time", "type": "select", "placeholder": "Preferred Delivery Time", "required": true, "options": ["8am-10am", "10am-12pm", "2pm-4pm", "4pm-6pm"]},
+                {"name": "notes", "type": "textarea", "placeholder": "Special Instructions", "required": false}
+             ]'
+             class="space-y-8">
+
+            <!-- Product Grid -->
+            <div class="swb-grid senangwebs-buy-products">
+                <!-- Kuih Lapis -->
+                <div data-swb-product 
+                     data-swb-product-sku="KM001" 
+                     data-swb-product-name="Kuih Lapis"
+                     data-swb-product-price="15.00"
+                     data-swb-product-add-cart-title="Add to Cart">
+                    <div data-swb-product-image>
+                        <img src="https://www.resipikita.com/wp-content/uploads/2024/05/Resepi-Kuih-Lapis-Nyonya-768x432.jpg" alt="Kuih Lapis" class="aspect-video object-cover w-full">
+                    </div>
+                    <div data-swb-product-details>
+                        <div data-swb-product-name>
+                            <h4>Kuih Lapis</h4>
+                        </div>
+                        <div data-swb-product-description>
+                            <p>Colorful steamed layer cake made with rice flour, coconut milk, and natural food coloring. Sold per box (20 pieces).</p>
+                        </div>
+                        <div data-swb-product-price>
+                            <p>RM 15.00</p>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Onde-Onde -->
+                <div data-swb-product 
+                     data-swb-product-sku="KM002" 
+                     data-swb-product-name="Onde-Onde"
+                     data-swb-product-price="12.00">
+                    <div data-swb-product-image>
+                        <img src="https://images.squarespace-cdn.com/content/v1/624fa63d5ba99559345806e6/6bc37081-b844-4151-9083-524c8b858dc5/EG13_EP52_Onde-Onde_1L0A5966.jpg" alt="Onde-Onde" class="aspect-video object-cover w-full">
+                    </div>
+                    <div data-swb-product-details>
+                        <div data-swb-product-name>
+                            <h4>Onde-Onde</h4>
+                        </div>
+                        <div data-swb-product-description>
+                            <p>Pandan-flavored glutinous rice balls filled with palm sugar (gula melaka) and coated with fresh grated coconut. Sold per box (15 pieces).</p>
+                        </div>
+                        <div data-swb-product-price>
+                            <p>RM 12.00</p>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Kuih Seri Muka -->
+                <div data-swb-product 
+                     data-swb-product-sku="KM003" 
+                     data-swb-product-name="Kuih Seri Muka"
+                     data-swb-product-price="18.00">
+                    <div data-swb-product-image>
+                        <img src="https://resepichenom.com/media/Kuih_Seri_Muka_watermark_1_of_1.webp" alt="Kuih Seri Muka" class="aspect-video object-cover w-full">
+                    </div>
+                    <div data-swb-product-details>
+                        <div data-swb-product-name>
+                            <h4>Kuih Seri Muka</h4>
+                        </div>
+                        <div data-swb-product-description>
+                            <p>Two-layer kuih with sticky rice base and smooth pandan custard top. Sold per box (12 pieces).</p>
+                        </div>
+                        <div data-swb-product-price>
+                            <p>RM 18.00</p>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Pulut Inti -->
+                <div data-swb-product 
+                     data-swb-product-sku="KM004" 
+                     data-swb-product-name="Pulut Inti"
+                     data-swb-product-price="15.00">
+                    <div data-swb-product-image>
+                        <img src="https://mylovelyrecipes.com/wp-content/uploads/2021/03/Pulut-Inti_r.jpg" alt="Pulut Inti" class="aspect-video object-cover w-full">
+                    </div>
+                    <div data-swb-product-details>
+                        <div data-swb-product-name>
+                            <h4>Pulut Inti</h4>
+                        </div>
+                        <div data-swb-product-description>
+                            <p>Blue-colored glutinous rice topped with sweet grated coconut caramelized with palm sugar. Sold per box (15 pieces).</p>
+                        </div>
+                        <div data-swb-product-price>
+                            <p>RM 15.00</p>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Kuih Koci -->
+                <div data-swb-product 
+                     data-swb-product-sku="KM005" 
+                     data-swb-product-name="Kuih Koci"
+                     data-swb-product-price="14.00">
+                    <div data-swb-product-image>
+                        <img src="https://img-global.cpcdn.com/recipes/a2433b828c6a032b/680x482cq70/kuih-koci-pulut-hitam-santan-resipi-foto-utama.jpg" alt="Kuih Koci" class="aspect-video object-cover w-full">
+                    </div>
+                    <div data-swb-product-details>
+                        <div data-swb-product-name>
+                            <h4>Kuih Koci</h4>
+                        </div>
+                        <div data-swb-product-description>
+                            <p>Glutinous rice flour dumplings filled with sweet grated coconut and wrapped in banana leaf. Sold per box (10 pieces).</p>
+                        </div>
+                        <div data-swb-product-price>
+                            <p>RM 14.00</p>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+
+                <!-- Kuih Talam -->
+                <div data-swb-product 
+                     data-swb-product-sku="KM006" 
+                     data-swb-product-name="Kuih Talam"
+                     data-swb-product-price="16.00">
+                    <div data-swb-product-image>
+                        <img src="https://periuk.my/static/c712d09e04fcae08aa730eb581e05249/09cbf/PRec-Kuih-talam-scaled.jpg" alt="Kuih Talam" class="aspect-video object-cover w-full">
+                    </div>
+                    <div data-swb-product-details>
+                        <div data-swb-product-name>
+                            <h4>Kuih Talam</h4>
+                        </div>
+                        <div data-swb-product-description>
+                            <p>Two-layer steamed cake with pandan bottom and creamy coconut top. Sold per box (15 pieces).</p>
+                        </div>
+                        <div data-swb-product-price>
+                            <p>RM 16.00</p>
+                        </div>
+                        <div data-swb-product-buttons></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Info -->
+        <div class="mt-12 bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-green-800 mb-4">Store Information</h2>
+            <div class="space-y-2 text-gray-600">
+                <p>🕒 Operating Hours: 8:00 AM - 6:00 PM (Tuesday - Sunday)</p>
+                <p>🚫 Closed on Mondays</p>
+                <p>🛵 Free delivery within Kampung Baru area (Min. order RM30)</p>
+                <p>🚗 Delivery charges apply for other areas in KL</p>
+                <p>📦 All kuih are freshly made daily</p>
+                <p>⚡ Pre-orders welcome for large quantities</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-green-100 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>© 2025 Mak Cik Sarah's Kuih-Muih. All rights reserved.</p>
+            <p class="mt-2">For bulk orders or catering inquiries, please WhatsApp us directly.</p>
+        </div>
+    </footer>
+</body>
+</html>
