@@ -101,7 +101,7 @@
     width: 2.5rem;
     bottom: 1rem;
     right: 1rem;
-    padding: .5rem;
+    padding: 0.5rem;
     border-radius: 50%;
     z-index: 99;
 }
@@ -157,7 +157,7 @@
     width: 90%;
     max-width: 600px;
     border-radius: 12px;
-    border: 1px solid #E5E5E5;
+    border: 1px solid #e5e5e5;
 }
 
 .swb-modal-close {
@@ -181,7 +181,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 16px;
-    border-bottom: 1px solid #E5E5E5;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .swb-cart-header h2 {
@@ -195,7 +195,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 16px;
-    border-bottom: 1px solid #E5E5E5;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .swb-cart-subheader p {
@@ -274,8 +274,8 @@
     font-weight: bold;
     font-size: 18px;
     text-align: center;
-    border-bottom: 1px solid #E5E5E5;
-    border-top: 1px solid #E5E5E5;
+    border-bottom: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
 }
 
 /* Product Buttons */
@@ -326,3 +326,71 @@
         width: 100%;
     }
 }
+
+.senangwebs-buy-products {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.senangwebs-buy-products > [data-swb-product] {
+    border-radius: 0.75rem;
+    border: 1px solid #ddd;
+    background-color: white;
+    overflow: hidden;
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.senangwebs-buy-products > [data-swb-product] img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0.5rem;
+}
+
+.senangwebs-buy-products [data-swb-product-details] {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.senangwebs-buy-products [data-swb-product-name] > h4 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.senangwebs-buy-products [data-swb-product-description] {
+    flex-grow: 1;
+    margin-bottom: .5rem;
+}
+
+.senangwebs-buy-products [data-swb-product-description] > * {
+    opacity: 0.75;
+}
+
+.senangwebs-buy-products [data-swb-product-price] > p {
+    font-weight: bold;
+    margin-top: auto;
+}
+
+@media (min-width: 640px) {
+    .senangwebs-buy-products {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .senangwebs-buy-products {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .senangwebs-buy-products {
+        column-gap: 2rem;
+    }
+}
+

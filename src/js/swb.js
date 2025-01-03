@@ -382,7 +382,7 @@ class SWB {
         const catalog = document.querySelector(`[data-swb-catalog][data-swb-store-id="${storeId}"]`);
         if (!catalog) return;
 
-        const productGrid = catalog.querySelector('.grid');
+        const productGrid = catalog.querySelector('.swb-grid');
         if (!productGrid) return;
 
         Array.from(productGrid.children).forEach(child => {
