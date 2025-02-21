@@ -1,6 +1,3 @@
-[![SenangWebs](https://raw.githubusercontent.com/a-hakim/senangwebs-buy/refs/heads/main/src/sw_banner.webp)](https://use.senangwebs.com)
-Learn more at [SenangWebs.com](https://use.senangwebs.com)
-
 # SenangWebs Buy (SWB)
 
 SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML attributes into a basic WhatsApp based e-commerce solution. Create dynamic shopping experiences with WhatsApp checkout integration, advanced product filtering, multi-store support, and more - all with minimal setup and zero dependencies.
@@ -73,32 +70,34 @@ Include SenangWebs Buy directly in your HTML file:
        {"name": "size", "type": "select", "placeholder": "Size", "required": true}
      ]'>
     
-    <!-- Product Item -->
-    <div data-swb-product
-         data-swb-product-sku="PROD001"
-         data-swb-product-name="Product Name"
-         data-swb-product-price="99.99"
-         data-swb-product-add-cart-title="Add to Cart"
-         data-swb-product-link="https://example.com"
-         data-swb-product-link-title="View Details">
-        
-        <div data-swb-product-image>
-            <img src="product-image.jpg" alt="Product">
-        </div>
-        
-        <div data-swb-product-name>
-            <h3>Product Name</h3>
-        </div>
-        
-        <div data-swb-product-price>
-            $99.99
-        </div>
+    <div class="swb-grid senangwebs-buy-products">
+        <!-- Product Item -->
+        <div data-swb-product
+            data-swb-product-sku="PROD001"
+            data-swb-product-name="Product Name"
+            data-swb-product-price="99.99"
+            data-swb-product-add-cart-title="Add to Cart"
+            data-swb-product-link="https://example.com"
+            data-swb-product-link-title="View Details">
+            
+            <div data-swb-product-image>
+                <img src="product-image.jpg" alt="Product">
+            </div>
+            
+            <div data-swb-product-name>
+                <h3>Product Name</h3>
+            </div>
+            
+            <div data-swb-product-price>
+                $99.99
+            </div>
 
-        <div data-swb-product-description>
-            <p>Product description goes here...</p>
+            <div data-swb-product-description>
+                <p>Product description goes here...</p>
+            </div>
+            
+            <div data-swb-product-buttons></div>
         </div>
-        
-        <div data-swb-product-buttons></div>
     </div>
 </div>
 ```
