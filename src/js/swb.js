@@ -470,7 +470,7 @@ class SWB {
                         </svg>
                     </button>
                 </div>
-                <div class="swb-item-price">${this.formatPrice(item.price * item.quantity)}</div>
+                <div class="swb-item-price">${item.price ? this.formatPrice(item.price * item.quantity) : ''}</div>
                 <button onclick="swb.removeFromCart('${storeId}', '${item.sku}')" class="swb-remove-item">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 352 512">
                         <path d="M242.7 256l100.1-100.1c12.3-12.3 12.3-32.2 0-44.5l-22.2-22.2c-12.3-12.3-32.2-12.3-44.5 0L176 189.3 75.9 89.2c-12.3-12.3-32.2-12.3-44.5 0L9.2 111.5c-12.3 12.3-12.3 32.2 0 44.5L109.3 256 9.2 356.1c-12.3 12.3-12.3 32.2 0 44.5l22.2 22.2c12.3 12.3 32.2 12.3 44.5 0L176 322.7l100.1 100.1c12.3 12.3 32.2 12.3 44.5 0l22.2-22.2c12.3-12.3 12.3-32.2 0-44.5L242.7 256z"/>
@@ -648,11 +648,15 @@ class SWB {
         store.cart.forEach(item => {
             message += `- ${item.name} (SKU: ${item.sku})\n`;
             message += `  Quantity: ${item.quantity}\n`;
-            message += `  Price: ${this.formatPrice(item.price * item.quantity)}\n\n`;
+            if (item.price) {
+                message += `  Price: ${this.formatPrice(item.price * item.quantity)}\n\n`;
+            }
         });
     
-        const total = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        message += `Total Amount: ${this.formatPrice(total)}`;
+        const total = store.cart.reduce((sum, item) => sum + item.price ? (item.price * item.quantity) : 0, 0);
+        if (total > 0) {
+            message += `Total Amount: ${this.formatPrice(total)}`;
+        }
     
         return message;
     }
