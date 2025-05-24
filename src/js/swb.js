@@ -505,6 +505,7 @@ class SWB {
         if (!store) return;
 
         store.cart = store.cart.filter(item => item.sku !== sku);
+        this.updateTotal(storeId);
         this.saveCartToStorage(storeId, store.cart);
         this.renderCart(storeId);
         this.updateCartCount(storeId);
@@ -514,7 +515,7 @@ class SWB {
         const store = this.stores.get(storeId);
         if (!store) return;
 
-        const total = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = store.cart.reduce((sum, item) => sum + item.price ? (item.price * item.quantity) : 0, 0);
         const totalElement = document.querySelector(`.swb-cart-modal[data-swb-store-id="${storeId}"] .swb-cart-total`);
         if (totalElement) {
             totalElement.textContent = `Total: ${this.formatPrice(total)}`;
