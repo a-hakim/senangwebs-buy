@@ -251,7 +251,7 @@
 }
 
 .swb-remove-item {
-    color: var(--swb-color-secondary, #dc3545);
+    color: #dc3545;
     background: transparent;
     border-radius: 50%;
     width: 24px;
@@ -265,7 +265,7 @@
 }
 
 .swb-remove-item:hover {
-    background: var(--swb-color-secondary, #dc3545);
+    background: #dc3545;
     color: white;
 }
 
