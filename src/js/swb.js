@@ -1,6 +1,6 @@
 // SenangWebs Buy Library
 
-import "@bookklik/senangstart-icons/dist/senangstart-icon.min.js";
+const icons = require('@bookklik/senangstart-icons/icons');
 
 class SWB {
   constructor() {
@@ -293,7 +293,7 @@ class SWB {
         cartBtn.classList.add("swb-cart-button-floating");
       }
       cartBtn.innerHTML = `
-                <ss-icon icon="shopping-cart" thickness="2.2"></ss-icon>
+                ${icons['shopping-cart']}
                 <span class="swb-cart-count" data-swb-cart-count>${count}</span>
             `;
       cartBtn.addEventListener("click", () => this.showCheckout(storeId));
@@ -513,13 +513,13 @@ class SWB {
                     <button onclick="swb.updateQuantity('${storeId}', '${
         item.sku
       }', -1)">
-                        <ss-icon icon="minus" thickness="2.2"></ss-icon>
+                        ${icons['minus']}
                     </button>
                     <span>${item.quantity}</span>
                     <button onclick="swb.updateQuantity('${storeId}', '${
         item.sku
       }', 1)">
-                        <ss-icon icon="plus" thickness="2.2"></ss-icon>
+                        ${icons['plus']}
                     </button>
                 </div>
                 <div class="swb-item-price">${
@@ -528,7 +528,7 @@ class SWB {
                 <button onclick="swb.removeFromCart('${storeId}', '${
         item.sku
       }')" class="swb-remove-item">
-                    <ss-icon icon="x-mark" thickness="2.2"></ss-icon>
+                    ${icons['x-mark']}
                 </button>
             `;
       cartItems.appendChild(itemElement);
@@ -618,7 +618,7 @@ class SWB {
                         <h2>${store.info.checkoutTitle}</h2>
                     </div>
                     <div class="swb-modal-close">
-                        <ss-icon icon="x-mark" thickness="2.5"></ss-icon>
+                        ${icons['x-mark']}
                     </div>
                     <div class="swb-cart-subheader">
                         <p>Items</p>
