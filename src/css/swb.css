@@ -95,6 +95,11 @@
   height: 2.5rem;
 }
 
+.swb-cart-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .swb-cart-button-floating {
   position: fixed !important;
   height: 2.5rem;
