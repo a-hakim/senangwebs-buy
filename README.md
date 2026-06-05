@@ -19,6 +19,7 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML at
 - Multi-store support with independent carts and settings
 - Persistent shopping cart using localStorage
 - WhatsApp-based checkout system with customizable forms
+- Accurate multi-item cart totals in the modal and WhatsApp order summary
 - Advanced product filtering and sorting
 - Real-time search functionality
 - Multi-currency support with automatic formatting
@@ -39,7 +40,7 @@ SenangWebs Buy (SWB) is a lightweight JavaScript library that transforms HTML at
 ### Using npm
 
 ```bash
-npm install senangweb-buy
+npm install senangwebs-buy
 ```
 
 ### Using a CDN
@@ -196,7 +197,7 @@ Include SenangWebs Buy directly in your HTML file:
 - Real-time validation
 - Clear cart functionality
 - Quantity management
-- Price calculations
+- Accurate totals across all cart line items
 
 ### Multi-Store Management
 
