@@ -135,6 +135,25 @@ Include SenangWebs Buy directly in your HTML file:
 </button>
 ```
 
+### JavaScript API
+
+The library auto-initializes on DOM ready (safe to load in `<head>` without `defer`). It also exposes an API:
+
+```js
+window.swb.refresh();          // re-scan the DOM after dynamically adding catalogs/products (SPA-friendly)
+window.swb.addToCart("store1", { sku: "P1", name: "Product", price: 9.99, quantity: 1 });
+window.swb.showCheckout("store1");
+window.swb.clearCart("store1");
+window.swb.formatPrice(15, "store1"); // "RM 15.00" — Intl.NumberFormat, per-store currency
+```
+
+When installed via npm, the UMD build also exports the `SWB` class so you can create your own instance:
+
+```js
+const SWB = require("senangwebs-buy");
+const swb = new SWB();
+```
+
 ## Configuration Options
 
 ### Catalog Attributes

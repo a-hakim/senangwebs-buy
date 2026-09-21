@@ -5,7 +5,7 @@ const { EsbuildPlugin } = require('esbuild-loader');
 module.exports = (env, argv) => {
   const commonConfig = {
     entry: {
-      swb: ['./src/js/swb.js', './src/css/swb.css'],
+      swb: './src/js/swb.js',
     },
     module: {
       rules: [

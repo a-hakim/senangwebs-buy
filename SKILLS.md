@@ -1,7 +1,7 @@
 ---
 name: senangwebs-buy
 description: HTML attribute-driven WhatsApp e-commerce with product catalogs, carts, filtering, multi-store support, and checkout.
-version: 1.3.9
+version: 1.4.0
 package: senangwebs-buy
 ---
 
@@ -11,8 +11,9 @@ package: senangwebs-buy
 
 - **Purpose**: Declarative WhatsApp-based e-commerce with persistent carts
 - **Entry**: `src/js/swb.js`; builds to `dist/swb.js` and `dist/swb.min.js`
-- **Dependencies**: `@bookklik/senangstart-icons`
+- **Dependencies**: none (icons inlined from `@bookklik/senangstart-icons`)
 - **Scripts**: `npm run build`, `npm run dev`, `npm run test`
+- **Types**: `index.d.ts`
 
 ## Workflow
 
@@ -69,7 +70,11 @@ Start in `C:\wamp64\www\sw-libraries\senangwebs-buy`. Read `README.md`, `package
 ## Implementation Guidance
 
 - Preserve backward compatibility for all documented attributes, class names, and export names
-- Test multi-store isolation: carts must not bleed between storeIds
+- Test multi-store isolation: carts, currency, and theme colors are per-store (`store.info.currency`, `store.colors`); CSS custom properties are scoped to store elements, not `:root`
+- All dynamic HTML must be built with DOM APIs (`createElement`/`textContent`); never interpolate unescaped data into `innerHTML`; interactions use delegated `[data-swb-action]` clicks (CSP-safe, no inline handlers)
+- All product links pass through `isSafeUrl()` (http/https only); WhatsApp numbers sanitized to digits
+- Currency formatting uses cached `Intl.NumberFormat` per store with zero-decimal support (JPY/KRW/VND)
+- `swb.refresh()` re-scans the DOM for new catalogs/components (idempotent via `data-swb-initialized` / `data-swb-bound` flags)
 - Verify WhatsApp message format includes all billing and custom field data
 - Keep price and quantity math numeric; product attributes may arrive as strings
 - Keep examples copy-pasteable; update README on API changes
